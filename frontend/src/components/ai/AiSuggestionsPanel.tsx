@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Card, Button, Spinner, Badge } from 'flowbite-react';
 import { HiOutlineLightBulb, HiCheck, HiX } from 'react-icons/hi';

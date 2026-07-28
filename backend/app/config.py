@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     DEBUG: bool = False
 
     # Database
-    DATABASE_URL: str = "postgresql://pharma_user:pharma_pass@localhost:5432/pharma_complaints"
+    DATABASE_URL: str = "sqlite:///./app.db"
 
     # JWT
     SECRET_KEY: str = "your-super-secret-jwt-key-change-in-production-min-32-chars"

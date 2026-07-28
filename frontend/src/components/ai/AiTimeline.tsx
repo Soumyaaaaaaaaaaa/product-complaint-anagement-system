@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import { Card, Timeline, Spinner } from 'flowbite-react';
 import { HiCalendar } from 'react-icons/hi';

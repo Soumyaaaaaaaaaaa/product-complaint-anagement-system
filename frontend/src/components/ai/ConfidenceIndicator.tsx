@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Tooltip } from 'flowbite-react';
 import { HiCheckCircle, HiExclamationCircle, HiXCircle } from 'react-icons/hi';

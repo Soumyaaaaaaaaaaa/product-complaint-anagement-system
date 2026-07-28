@@ -132,6 +132,8 @@ export interface ComplaintFilters {
   priority?: string
   category?: string
   assigned_to?: string
+  from_date?: string
+  to_date?: string
   skip?: number
   limit?: number
 }

@@ -8,6 +8,7 @@ import { ArrowLeft, Sparkles, Clock, User, Package, Calendar, AlertCircle, FileT
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
 import { motion } from 'framer-motion'
+import { ComplaintStatus } from '../types'
 
 export default function ComplaintDetailPage() {
   const { id } = useParams<{ id: string }>()

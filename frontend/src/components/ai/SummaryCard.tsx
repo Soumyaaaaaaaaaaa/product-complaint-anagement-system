@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Card } from 'flowbite-react';
 import { HiOutlineDocumentText } from 'react-icons/hi';

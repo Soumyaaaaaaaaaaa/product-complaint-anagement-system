@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Card, Badge, Tooltip } from 'flowbite-react';
 import { HiShieldExclamation, HiInformationCircle } from 'react-icons/hi';

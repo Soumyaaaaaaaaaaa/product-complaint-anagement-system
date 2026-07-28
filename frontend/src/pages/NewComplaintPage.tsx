@@ -34,7 +34,7 @@ export default function NewComplaintPage() {
     product_id: '',
     lot_number: '',
     quantity_affected: 1,
-    is_draft: True,
+    is_draft: true,
   })
 
   useEffect(() => {
@@ -95,7 +95,7 @@ export default function NewComplaintPage() {
     if (file.extracted_text) {
       setFormData(prev => ({
         ...prev,
-        description: prev.description ? prev.description + '\n\n-- Extracted Text --\n' + file.extracted_text : file.extracted_text
+        description: prev.description ? prev.description + '\n\n-- Extracted Text --\n' + (file.extracted_text || '') : (file.extracted_text || '')
       }))
     }
   }
