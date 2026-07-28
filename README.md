@@ -29,6 +29,17 @@ This full-stack application leverages **FastAPI**, **PostgreSQL**, **React (Vite
 
 ---
 
+## 📋 Prerequisites / Requirements
+
+Before you begin, ensure you have the following installed on your host machine:
+- **Docker Desktop**
+- **WSL2** (if on Windows)
+- **Docker Engine** (running)
+- **Node.js** (v18+) (if running locally without Docker)
+- **Python 3.11+** (if running locally without Docker)
+
+---
+
 ## 🚀 Quick Start (Docker)
 
 The easiest way to get the entire stack running is via Docker Compose.
@@ -40,25 +51,28 @@ The easiest way to get the entire stack running is via Docker Compose.
    ```
 
 2. **Configure Environment Variables:**
-   - Rename `.env.example` to `.env` in the root directory (or inside `/backend`).
-   - Add your **Groq API Key**:
-     ```env
-     GROQ_API_KEY=your_groq_api_key_here
-     ```
+   Ensure `.env` exists in the root directory with the following variables:
+   ```env
+   GROQ_API_KEY=your_groq_api_key_here
+   POSTGRES_USER=pharma_user
+   POSTGRES_PASSWORD=pharma_pass
+   POSTGRES_DB=pharma_complaints
+   ```
 
 3. **Start the containers:**
    ```bash
-   docker-compose up --build -d
+   docker compose up --build -d
    ```
 
-4. **Run Database Migrations:**
+4. **Run Database Migrations (if needed):**
    ```bash
    docker exec -it pharma_backend alembic upgrade head
    ```
 
 5. **Access the Application:**
    - Frontend UI: [http://localhost:3000](http://localhost:3000)
-   - Backend API Docs (Swagger): [http://localhost:8000/api/docs](http://localhost:8000/api/docs)
+   - Backend API: [http://localhost:8000](http://localhost:8000)
+   - API Docs (Swagger): [http://localhost:8000/api/docs](http://localhost:8000/api/docs)
 
 **Default Admin Credentials:**
 - Email: `admin@pharma.com`
