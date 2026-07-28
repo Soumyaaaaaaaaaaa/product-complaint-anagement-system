@@ -53,20 +53,6 @@ The objective of this project is to demonstrate an AI-enhanced product workflow 
 3. reduce analyst workload through AI suggestions,
 4. provide a clean operational dashboard for review and follow-up.
 
-## Screenshots
-
-> Screenshots and a live demo GIF can be added here for presentation purposes.
-
-- Login screen
-- Dashboard overview
-- Complaint intake form
-- Complaint detail page with AI insights
-- Audit trail and user activity view
-
-## Demo GIF Placeholder
-
-> Add a short GIF or screen recording showcasing: login → upload document → AI extraction → complaint save → dashboard review.
-
 ## Features
 
 The current implementation includes the following features:
