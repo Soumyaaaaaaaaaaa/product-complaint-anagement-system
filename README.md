@@ -1,4 +1,6 @@
+
 # AI-Powered Pharmaceutical Customer Complaint Management System
+[![Ask DeepWiki](https://devin.ai/assets/askdeepwiki.png)](https://deepwiki.com/Soumyaaaaaaaaaaa/product-complaint-anagement-system)
 
 ![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB) ![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688) ![React](https://img.shields.io/badge/React-18-61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6) ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED)
 
@@ -184,8 +186,8 @@ flowchart TD
 ### Option 1: Run with Docker (Recommended)
 
 ```bash
-git clone <repository-url>
-cd product-complaint-mangment-system
+git clone https://github.com/soumyaaaaaaaaaaa/product-complaint-anagement-system.git
+cd product-complaint-anagement-system
 ```
 
 Create a root-level `.env` file before starting the stack:
@@ -265,14 +267,14 @@ DATABASE_URL=postgresql://your_user:your_password@localhost:5432/pharma_complain
 
 The backend reads the following environment variables from the root `.env` file:
 
-| Variable | Description | Required | Example |
-|---|---|---:|---|
-| DATABASE_URL | PostgreSQL connection string used by SQLAlchemy | Yes | `postgresql://pharma_user:pharma_pass@db:5432/pharma_complaints` |
-| SECRET_KEY | JWT signing secret | Yes | `change-me-in-production` |
-| ALGORITHM | JWT algorithm | Yes | `HS256` |
-| GROQ_API_KEY | API key used by the AI workflow and Groq-based prompts | Optional for local fallback | `gsk_...` |
-| UPLOAD_DIR | Directory used to store uploaded files | No | `uploads` |
-| MAX_UPLOAD_SIZE_MB | Maximum upload size in megabytes | No | `10` |
+| Variable             | Description                                                  | Required               | Example                                                           |
+| -------------------- | ------------------------------------------------------------ | ---------------------- | ----------------------------------------------------------------- |
+| DATABASE_URL         | PostgreSQL connection string used by SQLAlchemy              | Yes                    | `postgresql://pharma_user:pharma_pass@db:5432/pharma_complaints`   |
+| SECRET_KEY           | JWT signing secret                                           | Yes                    | `change-me-in-production`                                         |
+| ALGORITHM            | JWT algorithm                                                | Yes                    | `HS256`                                                           |
+| GROQ_API_KEY         | API key used by the AI workflow and Groq-based prompts       | Optional for local fallback | `gsk_...`                                                         |
+| UPLOAD_DIR           | Directory used to store uploaded files                       | No                     | `uploads`                                                         |
+| MAX_UPLOAD_SIZE_MB   | Maximum upload size in megabytes                             | No                     | `10`                                                              |
 
 > Note: The current implementation does not read a dedicated `OCR_PATH` environment variable. OCR support depends on Tesseract being available on the host machine.
 
@@ -474,4 +476,3 @@ This project makes use of excellent open-source tools and services, including:
 - Groq
 - PostgreSQL
 - Docker
-
