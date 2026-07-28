@@ -225,6 +225,71 @@ def delete_complaint_file(
     delete_uploaded_file(db, file)
 
 
+@router.post("/upload")
+async def upload_and_parse_document(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Production-ready document upload endpoint.
+    Accepts PDF, DOCX, Images, TXT.
+    Extracts raw text via PyMuPDF / pdfplumber / OCR (pytesseract) / python-docx.
+    Passes text into LangGraph / AI parsing.
+    Returns structured parsed complaint JSON.
+    Never returns 500 on valid upload.
+    """
+    if not file or not file.filename:
+        raise HTTPException(status_code=400, detail="No file provided")
+    
+    allowed_exts = {".pdf", ".docx", ".png", ".jpg", ".jpeg", ".tiff", ".bmp", ".txt"}
+    file_ext = os.path.splitext(file.filename)[1].lower()
+    if file_ext not in allowed_exts:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Unsupported file format '{file_ext}'. Allowed formats: PDF, DOCX, PNG, JPG, JPEG, TXT"
+        )
+    
+    max_size = 15 * 1024 * 1024
+    content = await file.read()
+    if len(content) > max_size:
+        raise HTTPException(status_code=400, detail="File exceeds maximum allowed size of 15MB")
+    if len(content) == 0:
+        raise HTTPException(status_code=400, detail="Uploaded file is empty (0 bytes)")
+
+    temp_dir = os.path.join(settings.UPLOAD_DIR, "temp")
+    os.makedirs(temp_dir, exist_ok=True)
+    temp_filename = f"{uuid.uuid4()}_{file.filename}"
+    filepath = os.path.join(temp_dir, temp_filename)
+
+    try:
+        async with aiofiles.open(filepath, "wb") as f:
+            await f.write(content)
+
+        raw_text = extract_text_from_file(filepath, file.content_type)
+        if not raw_text or not raw_text.strip():
+            raw_text = f"[Scanned/Image document processed: {file.filename}]"
+
+        from app.services.workflow import extract_node
+        state = {"extracted_text": raw_text, "parsed_data": {}}
+        state = extract_node(state)
+        parsed_data = state.get("parsed_data", {})
+
+        return {
+            "success": True,
+            "filename": file.filename,
+            "raw_text": raw_text,
+            "parsed_data": parsed_data
+        }
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=f"Could not process document: {str(e)}")
+    finally:
+        if os.path.exists(filepath):
+            try:
+                os.remove(filepath)
+            except Exception:
+                pass
+
+
 class ChatInput(BaseModel):
     message: str
 

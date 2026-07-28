@@ -8,12 +8,15 @@ import toast from 'react-hot-toast'
 import clsx from 'clsx'
 import type { UploadedFile } from '../../types'
 
+import { complaintsApi, apiClient } from '../../api/client'
+
 interface FileUploaderProps {
-  complaintId: string
-  onUploadComplete: (file: UploadedFile) => void
+  complaintId?: string
+  onUploadComplete?: (file: UploadedFile) => void
+  onDirectParse?: (res: { raw_text: string; parsed_data: any; filename: string }) => void
 }
 
-export default function FileUploader({ complaintId, onUploadComplete }: FileUploaderProps) {
+export default function FileUploader({ complaintId, onUploadComplete, onDirectParse }: FileUploaderProps) {
   const dispatch = useAppDispatch()
   const progress = useAppSelector(state => state.complaints.uploadProgress)
 
@@ -25,21 +28,30 @@ export default function FileUploader({ complaintId, onUploadComplete }: FileUplo
     formData.append('file', file)
 
     try {
-      const res = await apiClient.post(`/complaints/${complaintId}/files`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1))
-          dispatch(setUploadProgress(percentCompleted))
-        },
-      })
-      toast.success('File uploaded and text extracted successfully')
-      onUploadComplete(res.data)
-    } catch (error) {
-      toast.error('Failed to upload file')
+      if (onDirectParse) {
+        dispatch(setUploadProgress(20))
+        const res = await complaintsApi.uploadAndParse(formData)
+        dispatch(setUploadProgress(100))
+        toast.success('Document uploaded and AI extracted fields successfully!')
+        onDirectParse(res.data)
+      } else if (complaintId && onUploadComplete) {
+        const res = await apiClient.post(`/complaints/${complaintId}/files`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1))
+            dispatch(setUploadProgress(percentCompleted))
+          },
+        })
+        toast.success('File uploaded and text extracted successfully')
+        onUploadComplete(res.data)
+      }
+    } catch (error: any) {
+      const msg = error?.response?.data?.detail || 'Failed to upload document'
+      toast.error(typeof msg === 'string' ? msg : 'Error uploading file')
     } finally {
       dispatch(setUploadProgress(0))
     }
-  }, [complaintId, dispatch, onUploadComplete])
+  }, [complaintId, dispatch, onUploadComplete, onDirectParse])
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
     onDrop,

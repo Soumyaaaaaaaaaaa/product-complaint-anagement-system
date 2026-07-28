@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, String, DateTime, Text, Enum as SAEnum
+from sqlalchemy import Column, String, DateTime, Text, Boolean, Enum as SAEnum
 from sqlalchemy import UUID
 from sqlalchemy.orm import relationship
 from app.database import Base
@@ -43,6 +43,3 @@ class Product(Base):
     def __repr__(self) -> str:
         return f"<Product {self.name} ({self.sku})>"
 
-
-# Fix missing import
-from sqlalchemy import Boolean

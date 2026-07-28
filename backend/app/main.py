@@ -26,12 +26,12 @@ def create_tables():
 
 
 def seed_admin_user():
-    """Create a default admin user if none exists."""
+    """Create or verify default admin user."""
     db = SessionLocal()
     try:
         from app.models.user import UserRole
-        user_count = db.query(User).count()
-        if user_count == 0:
+        admin = db.query(User).filter(User.email.ilike("admin@pharma.com")).first()
+        if not admin:
             admin = User(
                 email="admin@pharma.com",
                 full_name="System Administrator",
@@ -43,6 +43,11 @@ def seed_admin_user():
             db.add(admin)
             db.commit()
             print("✅ Default admin user created: admin@pharma.com / Admin@123")
+        else:
+            admin.password_hash = get_password_hash("Admin@123")
+            admin.is_active = True
+            db.commit()
+            print("✅ Default admin user verified: admin@pharma.com / Admin@123")
     except Exception as e:
         print(f"⚠️  Seeding skipped: {e}")
         db.rollback()

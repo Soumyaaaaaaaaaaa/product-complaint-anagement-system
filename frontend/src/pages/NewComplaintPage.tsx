@@ -25,6 +25,9 @@ export default function NewComplaintPage() {
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1)
   const [emailText, setEmailText] = useState('')
 
+  const [extractedRawText, setExtractedRawText] = useState<string>('')
+  const [extractedFields, setExtractedFields] = useState<Record<string, any> | null>(null)
+
   const [formData, setFormData] = useState<ComplaintCreate>({
     title: '',
     description: '',
@@ -36,6 +39,33 @@ export default function NewComplaintPage() {
     quantity_affected: 1,
     is_draft: true,
   })
+
+  const handleDirectParse = useCallback((res: { raw_text: string; parsed_data: any; filename: string }) => {
+    const { raw_text, parsed_data, filename } = res
+    setExtractedRawText(raw_text)
+    setExtractedFields(parsed_data)
+
+    setFormData(prev => {
+      const p_name = parsed_data.product_name || ''
+      const matchedProd = products.find(p => p.name.toLowerCase().includes(p_name.toLowerCase()))
+      const c_name = (parsed_data.customer_name || parsed_data.company || '').toLowerCase()
+      const matchedCust = customers.find(c => c.name.toLowerCase().includes(c_name))
+
+      return {
+        ...prev,
+        title: parsed_data.title || prev.title || `Complaint from ${filename}`,
+        description: parsed_data.description || raw_text || prev.description,
+        lot_number: parsed_data.batch_number || parsed_data.lot_number || prev.lot_number,
+        category: (parsed_data.category && ['product_quality', 'packaging', 'labeling', 'other'].includes(parsed_data.category)) ? parsed_data.category : 'product_quality',
+        priority: (parsed_data.priority && ['low', 'medium', 'high', 'critical'].includes(parsed_data.priority)) ? parsed_data.priority : (parsed_data.risk_level === 'medium' ? 'medium' : 'high'),
+        product_id: matchedProd ? matchedProd.id : prev.product_id,
+        customer_id: matchedCust ? matchedCust.id : prev.customer_id,
+      }
+    })
+
+    toast.success('Form auto-filled from document analysis!')
+    setCurrentStep(2)
+  }, [products, customers])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -222,31 +252,20 @@ export default function NewComplaintPage() {
                 <p className="text-slate-500 text-center">Skip document parsing and enter the complaint details directly.</p>
               )}
               {activeTab === 'upload' && (
-                <div className="w-full max-w-lg space-y-4">
-                  {draftId ? (
-                    <FileUploader complaintId={draftId} onUploadComplete={handleUploadComplete} />
-                  ) : (
-                    <div className="text-center p-6 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl">
-                      <p className="text-slate-500 mb-4">Please provide a title first to enable uploads.</p>
-                      <input 
-                        type="text" 
-                        placeholder="Complaint Title..." 
-                        value={formData.title}
-                        onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                        className="form-input max-w-sm mx-auto"
-                      />
-                      <button onClick={saveDraft} disabled={!formData.title} className="btn-primary mt-4">Save & Continue to Upload</button>
-                    </div>
-                  )}
-                  {uploadedFiles.length > 0 && (
-                    <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl mt-4 space-y-2">
-                      <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Extracted Files:</h4>
-                      {uploadedFiles.map(f => (
-                        <div key={f.id} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                          <CheckCircle size={16} className="text-green-500" />
-                          {f.original_filename}
-                        </div>
-                      ))}
+                <div className="w-full max-w-xl space-y-4">
+                  <FileUploader onDirectParse={handleDirectParse} />
+                  {extractedRawText && (
+                    <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl mt-4 space-y-2 border border-slate-200 dark:border-slate-700">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-green-600 dark:text-green-400">
+                        <CheckCircle size={18} />
+                        Document Parsed & Extracted Successfully
+                      </div>
+                      <details className="text-xs text-slate-600 dark:text-slate-400 cursor-pointer">
+                        <summary className="font-medium hover:underline">View Extracted Raw Text</summary>
+                        <pre className="mt-2 p-3 bg-white dark:bg-slate-900 rounded-lg whitespace-pre-wrap max-h-40 overflow-y-auto font-mono">
+                          {extractedRawText}
+                        </pre>
+                      </details>
                     </div>
                   )}
                 </div>
@@ -258,7 +277,7 @@ export default function NewComplaintPage() {
                     rows={8}
                     value={emailText}
                     onChange={e => setEmailText(e.target.value)}
-                    placeholder="Paste the raw email text here..."
+                    placeholder="Paste raw email text here..."
                     className="form-input resize-y"
                   />
                 </div>
@@ -268,7 +287,6 @@ export default function NewComplaintPage() {
             <div className="flex justify-end pt-6">
               <button 
                 onClick={handleNext} 
-                disabled={activeTab === 'upload' && !draftId && !formData.title}
                 className="btn-primary"
               >
                 Continue to Details

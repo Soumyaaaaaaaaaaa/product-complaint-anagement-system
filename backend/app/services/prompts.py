@@ -1,17 +1,27 @@
 from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 
-EXTRACTION_SYSTEM_PROMPT = """You are an expert at extracting structured information from product complaints.
-Extract the following information from the provided text. For each field, provide the extracted 'value' and a 'confidence' score between 0.0 and 1.0.
+EXTRACTION_SYSTEM_PROMPT = """You are an expert pharmaceutical quality assurance AI.
+Extract structured information from the provided complaint text into a single JSON object.
 Fields to extract:
-- title
-- description
-- lot_number
-- quantity_affected
-- product_name
+- title (Short title summary)
+- customer_name (Customer or reporter name)
+- company (Medical store, pharmacy, or organization name)
+- product_name (Name of product/drug)
+- product_code (SKU, product ID or code if available)
+- batch_number (Batch or Lot number, e.g., PCM240701)
+- manufacturing_date (e.g. 15 June 2026)
+- expiry_date (e.g. 14 June 2028)
+- complaint_date (Date of complaint if mentioned)
+- category (product_quality, packaging, labeling, efficacy, or other)
+- description (Detailed issue description)
+- severity (low, medium, high, critical)
+- risk_level (low, medium, high, critical)
+- root_cause (Potential or identified root cause)
+- capa_recommendation (Actionable CAPA recommendations)
+- investigation_notes (Investigation steps or status notes)
+- priority (low, medium, high, critical)
 
-Respond only with a valid JSON object matching the requested schema, where each key is the field name and its value is an object with 'value' and 'confidence'.
-Example: {"title": {"value": "Broken vial", "confidence": 0.95}, ...}
-Do not include markdown formatting or additional text.
+Respond ONLY with a valid JSON object containing these keys. Do not include markdown or extra text.
 """
 
 EXTRACTION_PROMPT = ChatPromptTemplate.from_messages([

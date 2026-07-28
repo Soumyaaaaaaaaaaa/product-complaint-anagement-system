@@ -81,8 +81,10 @@ export const complaintsApi = {
     apiClient.post(`/complaints/${id}/files`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     }),
-  deleteFile: (complaintId: string, fileId: string) =>
-    apiClient.delete(`/complaints/${complaintId}/files/${fileId}`),
+  uploadAndParse: (formData: FormData) =>
+    apiClient.post('/complaints/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
 }
 
 export const customersApi = {

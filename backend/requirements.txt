@@ -15,6 +15,7 @@ langchain==0.2.1
 langchain-groq==0.1.4
 langgraph==0.1.1
 pdfplumber==0.11.1
+PyMuPDF==1.24.5
 python-docx==1.1.2
 pytesseract==0.3.10
 Pillow==10.3.0
